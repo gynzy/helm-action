@@ -19,9 +19,12 @@ RUN apk add --no-cache ca-certificates \
     chmod +x /usr/bin/helm3 && \
     rm -rf linux-amd64 && \
     # Init version 2 helm:
-    helm init --client-only
+    helm init --client-only && \
+    # Install google gcloud sdk
+    curl -sSL https://sdk.cloud.google.com | bash
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
+ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 COPY . /usr/src/
 ENTRYPOINT ["node", "/usr/src/index.js"]

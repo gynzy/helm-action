@@ -21,10 +21,13 @@ RUN apk add --no-cache ca-certificates \
     # Init version 2 helm:
     helm init --client-only --stable-repo-url https://charts.helm.sh/stable && \
     # Install google gcloud sdk
-    curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash | PREFIX=/opt/ bash
+    curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash | PREFIX=/opt/ bash && \
+    # Symlink default location to actually installed location \
+    mkdir -p  /usr/lib/google-cloud-sdk/bin && \
+    ln -s /opt/google-cloud-sdk/bin/gcloud /usr/lib/google-cloud-sdk/bin/gcloud
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
-ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+ENV PATH $PATH:/opt/google-cloud-sdk/bin
 
 COPY . /usr/src/
 ENTRYPOINT ["node", "/usr/src/index.js"]

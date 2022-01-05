@@ -24,7 +24,7 @@ RUN apk add --no-cache ca-certificates \
     curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash | PREFIX=/opt/ bash
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
-ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+ENV PATH $PATH:/opt/google-cloud-sdk/bin
 
 COPY . /usr/src/
 ENTRYPOINT ["node", "/usr/src/index.js"]

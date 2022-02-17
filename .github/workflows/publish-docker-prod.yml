@@ -30,4 +30,4 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |-
-          docker push "europe-docker.pkg.dev/gynzy-test-project/public-images/helm-action:${{ github.sha }}
+          docker push "europe-docker.pkg.dev/gynzy-test-project/public-images/helm-action:${{ github.sha }}"

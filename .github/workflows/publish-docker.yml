@@ -1,0 +1,30 @@
+name: publish-docker
+on: pull_request
+
+jobs:
+  publish-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GCE_NEW_TEST_JSON }}
+          project_id: gynzy-test-project
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud auth configure-docker europe-docker.pkg.dev
+
+      # Build the Docker image
+      - name: Build
+        run: |-
+          docker build \
+            --tag "europe-docker.pkg.dev/gynzy-test-project/public-images/helm-action:${{ github.sha }}" .
+
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |-
+          docker push "europe-docker.pkg.dev/gynzy-test-project/public-images/helm-action:${{ github.sha }}

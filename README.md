@@ -1,3 +1,11 @@
+# Gynzy `additions
+Fork from https://github.com/deliverybot/helm
+
+Uses "our" helm version of helm 2.15.2
+
+Releasing: The `v1` tag gets updated on **master merge**!
+
+
 # Helm Action
 
 Deploys a helm chart using GitHub actions. Supports canary deployments and

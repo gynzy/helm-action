@@ -1,4 +1,8 @@
 ::debug::not setting deployment status
+::debug::param: cluster_project = "GKEproject"
+::debug::param: cluster_location = "GKElocation"
+::debug::param: cluster_name = "clusterName"
+::debug::param: cluster_sajson = "{"json":"here"}"
 ::debug::param: track = "stable"
 ::debug::param: release = "app"
 ::debug::param: appName = "app"
@@ -15,8 +19,13 @@
 ::debug::param: timeout = ""
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
+Setting up GKE authentication
+[command]/tmp/bin/gcloud auth activate-service-account --key-file=sa.json
+gcloud auth activate-service-account --key-file=sa.json
+[command]/tmp/bin/gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
+gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]helm3 upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --atomic
-helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --atomic
+[command]/tmp/bin/helm3 upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --atomic
+helm3 upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --atomic
 ::debug::not setting deployment status

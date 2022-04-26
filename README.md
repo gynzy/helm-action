@@ -23,10 +23,10 @@ Inputs below are additionally loaded from the payload of the deployment event
 payload if the action was triggered by a deployment.
 
 #### Cluster authentication
-- `cluster_project`: The project in which the GKE cluster resides (required)
-- `cluster_location`: The location(zone) in which the GKE cluster resides (required) 
-- `cluster_name`:  The cluster name (required)
-- `cluster_sajson`: The service account json secret to be used (required)
+- `clusterProject`: The project in which the GKE cluster resides (required)
+- `clusterLocation`: The location(zone) in which the GKE cluster resides (required) 
+- `clusterMame`:  The cluster name (required)
+- `clusterSaJson`: The service account json secret to be used (required)
 
 #### Helm params
 - `release`: Helm release name. Will be combined with track if set. (required)

@@ -164,10 +164,10 @@ async function run() {
     const context = github.context;
     await status("pending");
 
-    const cluster_project = getInput("cluster_project", required);
-    const cluster_location = getInput("cluster_location", required);
-    const cluster_name = getInput("cluster_name", required);
-    const cluster_sajson = getInput("cluster_sajson", required);
+    const cluster_project = getInput("clusterproject", required);
+    const cluster_location = getInput("clusterlocation", required);
+    const cluster_name = getInput("clustername", required);
+    const cluster_sajson = getInput("clustersajson", required);
 
     const track = getInput("track") || "stable";
     const appName = getInput("release", required);

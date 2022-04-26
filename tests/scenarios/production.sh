@@ -1,5 +1,9 @@
 #!/bin/bash
 
+INPUT_CLUSTERPROJECT="GKEproject" \
+INPUT_CLUSTERLOCATION="GKElocation" \
+INPUT_CLUSTERNAME="clusterName" \
+INPUT_CLUSTERSAJSON='{"json":"here"}' \
 INPUT_TOKEN=foo \
 INPUT_SECRETS='{"secret": "val"}' \
 INPUT_CHART=app \

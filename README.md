@@ -22,6 +22,13 @@ View an example repository using this action at
 Inputs below are additionally loaded from the payload of the deployment event
 payload if the action was triggered by a deployment.
 
+#### Cluster authentication
+- `clusterProject`: The project in which the GKE cluster resides (required)
+- `clusterLocation`: The location(zone) in which the GKE cluster resides (required) 
+- `clusterName`:  The cluster name (required)
+- `clusterSaJson`: The service account json secret to be used (required)
+
+#### Helm params
 - `release`: Helm release name. Will be combined with track if set. (required)
 - `namespace`: Kubernetes namespace name. (required)
 - `chart`: Helm chart path. If set to "app" this will use the built in helm

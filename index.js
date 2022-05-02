@@ -7,7 +7,10 @@ const Mustache = require("mustache");
 
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
+const deleteFile = util.promisify(fs.rm);
 const required = { required: true };
+
+const GCLOUD_BINARY = 'gcloud';
 
 /**
  * Status marks the deployment status. Only activates if token is set as an
@@ -145,6 +148,14 @@ function deleteCmd(helm, namespace, release) {
   return ["delete", "--purge", release];
 }
 
+async function setupClusterAuthentication(project, location, name, sa_json) {
+  core.info('Setting up GKE authentication');
+  await writeFile("sa.json", sa_json);
+  await exec.exec(GCLOUD_BINARY, ['auth', 'activate-service-account', '--key-file=sa.json']);
+  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project]);
+  await deleteFile("sa.json");
+}
+
 /**
  * Run executes the helm deployment.
  */
@@ -152,6 +163,11 @@ async function run() {
   try {
     const context = github.context;
     await status("pending");
+
+    const cluster_project = getInput("clusterproject", required);
+    const cluster_location = getInput("clusterlocation", required);
+    const cluster_name = getInput("clustername", required);
+    const cluster_sajson = getInput("clustersajson", required);
 
     const track = getInput("track") || "stable";
     const appName = getInput("release", required);
@@ -171,6 +187,10 @@ async function run() {
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
 
+    core.debug(`param: cluster_project = "${cluster_project}"`);
+    core.debug(`param: cluster_location = "${cluster_location}"`);
+    core.debug(`param: cluster_name = "${cluster_name}"`);
+    core.debug(`param: cluster_sajson = "${cluster_sajson}"`);
     core.debug(`param: track = "${track}"`);
     core.debug(`param: release = "${release}"`);
     core.debug(`param: appName = "${appName}"`);
@@ -188,6 +208,8 @@ async function run() {
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
 
+    // Setup GKE cluster authentication
+    await setupClusterAuthentication(cluster_project, cluster_location, cluster_name, cluster_sajson);
 
     // Setup command options and arguments.
     const args = [

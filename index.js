@@ -186,6 +186,7 @@ async function run() {
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
+    const ttl = getInput("ttl") || 'false';
 
     core.debug(`param: cluster_project = "${cluster_project}"`);
     core.debug(`param: cluster_location = "${cluster_location}"`);
@@ -207,6 +208,15 @@ async function run() {
     core.debug(`param: timeout = "${timeout}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
+    core.debug(`param: ttl = "${ttl}"`);
+
+    // Assert that if ttl is set that release contains '-pr-'
+    if (helm === "helm3" && ttl !== "false") {
+      if (!release.includes('-pr-')) {
+        core.error("ttl is set but release name does not contain '-pr-'. Aborting!");
+        process.exit(1);
+      }
+    }
 
     // Setup GKE cluster authentication
     await setupClusterAuthentication(cluster_project, cluster_location, cluster_name, cluster_sajson);
@@ -225,6 +235,10 @@ async function run() {
       process.env.XDG_DATA_HOME = "/root/.helm/"
       process.env.XDG_CACHE_HOME = "/root/.helm/"
       process.env.XDG_CONFIG_HOME = "/root/.helm/"
+      process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins"
+      process.env.HELM_DATA_HOME = "/root/.local/share/helm"
+      process.env.HELM_CACHE_HOME = "/root/.cache/helm"
+      process.env.HELM_CONFIG_HOME = "/root/.config/helm"
     } else {
       process.env.HELM_HOME = "/root/.helm/"
     }
@@ -280,6 +294,16 @@ async function run() {
       });
     } else {
       await exec.exec(helm, args);
+    }
+
+    // Set ttl if set
+    if (helm === "helm3" && ttl !== "false") {
+      core.info('Setting ttl: ' + ttl);
+      await exec.exec(
+        helm,
+        [`--namespace=${namespace}`, "release", "ttl", release, `--set=${ttl}`],
+        { env: process.env }
+      );
     }
 
     await status(task === "remove" ? "inactive" : "success");

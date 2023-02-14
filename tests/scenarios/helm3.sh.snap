@@ -19,6 +19,7 @@
 ::debug::param: timeout = ""
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
+::debug::param: ttl = "false"
 Setting up GKE authentication
 [command]/tmp/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json

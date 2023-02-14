@@ -4,8 +4,8 @@
 ::debug::param: cluster_name = "clusterName"
 ::debug::param: cluster_sajson = "{"json":"here"}"
 ::debug::param: track = "stable"
-::debug::param: release = "app"
-::debug::param: appName = "app"
+::debug::param: release = "app-pr-123"
+::debug::param: appName = "app-pr-123"
 ::debug::param: namespace = "default"
 ::debug::param: chart = "/usr/src/charts/app"
 ::debug::param: chart_version = ""
@@ -16,10 +16,10 @@
 ::debug::param: secrets = "{"secret":"val"}"
 ::debug::param: valueFiles = "[]"
 ::debug::param: removeCanary = 
-::debug::param: timeout = "30"
+::debug::param: timeout = ""
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
-::debug::param: ttl = "false"
+::debug::param: ttl = "7 days"
 Setting up GKE authentication
 [command]/tmp/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json
@@ -27,6 +27,9 @@ gcloud auth activate-service-account --key-file=sa.json
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]/tmp/bin/helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=30 --values=./values.yml --atomic
-helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=30 --values=./values.yml --atomic
+[command]/tmp/bin/helm3 upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
+helm3 upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
+Setting ttl: 7 days
+[command]/tmp/bin/helm3 --namespace=default release ttl app-pr-123 --set=7 days
+helm3 --namespace=default release ttl app-pr-123 --set=7 days
 ::debug::not setting deployment status

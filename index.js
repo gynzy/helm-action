@@ -187,6 +187,10 @@ async function run() {
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
     const ttl = getInput("ttl") || 'false';
+    // only needed when ttl is specified
+    // this service account is used when ttl has expired inside the cronjob context.
+    const service_account = getInput("service_account") || 'helm-ttl-plugin';
+
 
     core.debug(`param: cluster_project = "${cluster_project}"`);
     core.debug(`param: cluster_location = "${cluster_location}"`);
@@ -209,6 +213,7 @@ async function run() {
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
     core.debug(`param: ttl = "${ttl}"`);
+    core.debug(`param: service_account = "${service_account}"`);
 
     // Assert that if ttl is set that release contains '-pr-'
     if (helm === "helm3" && ttl !== "false") {
@@ -301,7 +306,7 @@ async function run() {
       core.info('Setting ttl: ' + ttl);
       await exec.exec(
         helm,
-        [`--namespace=${namespace}`, "release", "ttl", release, `--set=${ttl}`],
+        [`--namespace=${namespace}`, "release", "ttl", release, `--service-account=${service_account}`, `--set=${ttl}`],
         { env: process.env }
       );
     }

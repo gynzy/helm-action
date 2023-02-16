@@ -24,7 +24,7 @@ RUN apk add --no-cache ca-certificates \
     # Init version 2 helm:
     helm init --client-only --stable-repo-url https://charts.helm.sh/stable && \
     # Install helm3 ttl plugin for temporary pr deploys \
-    helm3 plugin install https://github.com/JovianX/helm-release-plugin --version 43b76877bd0e2632b5370c2916b9e2cd02d0a3d6
+    helm3 plugin install https://github.com/gynzy/helm-release-plugin --version 161816e1ab6e7eadffa72a7b1cabaed642d91506
 
 # Install google gcloud sdk
 RUN curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash | PREFIX=/opt/ bash && \

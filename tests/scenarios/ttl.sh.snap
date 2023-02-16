@@ -20,6 +20,7 @@
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
 ::debug::param: ttl = "7 days"
+::debug::param: service_account = "helm-ttl-plugin"
 Setting up GKE authentication
 [command]/tmp/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json
@@ -30,6 +31,6 @@ gcloud container clusters get-credentials clusterName --zone GKElocation --proje
 [command]/tmp/bin/helm3 upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
 helm3 upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
 Setting ttl: 7 days
-[command]/tmp/bin/helm3 --namespace=default release ttl app-pr-123 --set=7 days
-helm3 --namespace=default release ttl app-pr-123 --set=7 days
+[command]/tmp/bin/helm3 --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days
+helm3 --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days
 ::debug::not setting deployment status

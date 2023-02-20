@@ -294,6 +294,14 @@ async function run() {
 
     // Actually execute the deployment here.
     if (task === "remove") {
+      if (helm === "helm3") { // delete ttl cronjob in case it was set (it is not required).
+        await exec.exec(
+          helm,
+          [`--namespace=${namespace}`, "release", "ttl", release, `--service-account=${service_account}`, `--unset=${ttl}`],
+          {env: process.env, ignoreReturnCode: true}
+        );
+      }
+
       await exec.exec(helm, deleteCmd(helm, namespace, release), {
         ignoreReturnCode: true
       });

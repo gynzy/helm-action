@@ -297,7 +297,7 @@ async function run() {
       if (helm === "helm3") { // delete ttl cronjob in case it was set (it is not required).
         await exec.exec(
           helm,
-          [`--namespace=${namespace}`, "release", "ttl", release, `--service-account=${service_account}`, `--unset=${ttl}`],
+          [`--namespace=${namespace}`, "release", "ttl", release, `--service-account=${service_account}`, `--unset`],
           {env: process.env, ignoreReturnCode: true}
         );
       }

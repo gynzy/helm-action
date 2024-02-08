@@ -10,7 +10,7 @@ const readFile = util.promisify(fs.readFile);
 const deleteFile = util.promisify(fs.rm);
 const required = { required: true };
 
-const GCLOUD_BINARY = 'gcloud';
+const GCLOUD_BINARY = '/opt/google-cloud-sdk/bin/gcloud';
 
 /**
  * Status marks the deployment status. Only activates if token is set as an

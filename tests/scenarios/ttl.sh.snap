@@ -22,9 +22,9 @@
 ::debug::param: ttl = "7 days"
 ::debug::param: service_account = "helm-ttl-plugin"
 Setting up GKE authentication
-[command]/tmp/bin/gcloud auth activate-service-account --key-file=sa.json
+[command]/opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json
-[command]/tmp/bin/gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
+[command]/opt/google-cloud-sdk/bin/gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}

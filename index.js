@@ -152,7 +152,7 @@ async function setupClusterAuthentication(project, location, name, sa_json) {
   core.info('Setting up GKE authentication');
   await writeFile("sa.json", sa_json);
   await exec.exec(GCLOUD_BINARY, ['auth', 'activate-service-account', '--key-file=sa.json']);
-  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project]);
+  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project], { env: { GOOGLE_APPLICATION_CREDENTIALS: 'sa.json' } });
   await deleteFile("sa.json");
 }
 

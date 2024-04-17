@@ -172,6 +172,19 @@ async function setupClusterAuthentication(project, location, name, sa_json) {
   await deleteFile("sa.json");
 }
 
+function unsetGloudariables() {
+  delete process.env.CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE;
+  delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  delete process.env.GOOGLE_GHA_CREDS_PATH;
+  delete process.env.CLOUDSDK_CORE_PROJECT;
+  delete process.env.CLOUDSDK_PROJECT;
+  delete process.env.GCLOUD_PROJECT;
+  delete process.env.GCP_PROJECT;
+  delete process.env.GOOGLE_CLOUD_PROJECT;
+  delete process.env.CLOUDSDK_METRICS_ENVIRONMENT;
+  delete process.env.CLOUDSDK_METRICS_ENVIRONMENT_VERSION;
+}
+
 /**
  * Run executes the helm deployment.
  */
@@ -179,6 +192,8 @@ async function run() {
   try {
     const context = github.context;
     await status("pending");
+
+    unsetGloudariables();
 
     const cluster_project = getInput("clusterproject", required);
     const cluster_location = getInput("clusterlocation", required);

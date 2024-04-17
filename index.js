@@ -151,8 +151,9 @@ function deleteCmd(helm, namespace, release) {
 async function setupClusterAuthentication(project, location, name, sa_json) {
   core.info('Setting up GKE authentication');
   await writeFile("sa.json", sa_json);
+  const account = JSON.parse(sa_json).client_email; // get the account passed in. this will prevent issues when multiple accounts have been activated
   await exec.exec(GCLOUD_BINARY, ['auth', 'activate-service-account', '--key-file=sa.json']);
-  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project], { env: { GOOGLE_APPLICATION_CREDENTIALS: 'sa.json' } });
+  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project, '--account', account]);
   await deleteFile("sa.json");
 }
 

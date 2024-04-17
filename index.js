@@ -10,7 +10,7 @@ const readFile = util.promisify(fs.readFile);
 const deleteFile = util.promisify(fs.rm);
 const required = { required: true };
 
-const GCLOUD_BINARY = '/opt/google-cloud-sdk/bin/gcloud';
+const GCLOUD_BINARY = "/opt/google-cloud-sdk/bin/gcloud";
 
 /**
  * Status marks the deployment status. Only activates if token is set as an
@@ -38,8 +38,8 @@ async function status(state) {
       log_url: url,
       target_url: url,
       headers: {
-        accept: 'application/vnd.github.ant-man-preview+json'
-      }
+        accept: "application/vnd.github.ant-man-preview+json",
+      },
     });
   } catch (error) {
     core.warning(`Failed to set deployment status: ${error.message}`);
@@ -96,7 +96,7 @@ function getValueFiles(files) {
   if (!Array.isArray(fileList)) {
     return [];
   }
-  return fileList.filter(f => !!f);
+  return fileList.filter((f) => !!f);
 }
 
 function getInput(name, options) {
@@ -104,7 +104,7 @@ function getInput(name, options) {
   const deployment = context.payload.deployment;
   let val = core.getInput(name.replace("_", "-"), {
     ...options,
-    required: false
+    required: false,
   });
   if (deployment) {
     if (deployment[name]) val = deployment[name];
@@ -126,7 +126,7 @@ function renderFiles(files, data) {
     `rendering value files [${files.join(",")}] with: ${JSON.stringify(data)}`
   );
   const tags = ["${{", "}}"];
-  const promises = files.map(async file => {
+  const promises = files.map(async (file) => {
     const content = await readFile(file, { encoding: "utf8" });
     const rendered = Mustache.render(content, data, {}, tags);
     await writeFile(file, rendered);
@@ -149,11 +149,26 @@ function deleteCmd(helm, namespace, release) {
 }
 
 async function setupClusterAuthentication(project, location, name, sa_json) {
-  core.info('Setting up GKE authentication');
+  core.info("Setting up GKE authentication");
   await writeFile("sa.json", sa_json);
   const account = JSON.parse(sa_json).client_email; // get the account passed in. this will prevent issues when multiple accounts have been activated
-  await exec.exec(GCLOUD_BINARY, ['auth', 'activate-service-account', '--key-file=sa.json']);
-  await exec.exec(GCLOUD_BINARY, ['container', 'clusters', 'get-credentials', name, '--zone', location, '--project', project, '--account', account]);
+  await exec.exec(GCLOUD_BINARY, [
+    "auth",
+    "activate-service-account",
+    "--key-file=sa.json",
+  ]);
+  await exec.exec(GCLOUD_BINARY, [
+    "container",
+    "clusters",
+    "get-credentials",
+    name,
+    "--zone",
+    location,
+    "--project",
+    project,
+    "--account",
+    account,
+  ]);
   await deleteFile("sa.json");
 }
 
@@ -187,11 +202,10 @@ async function run() {
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
-    const ttl = getInput("ttl") || 'false';
+    const ttl = getInput("ttl") || "false";
     // only needed when ttl is specified
     // this service account is used when ttl has expired inside the cronjob context.
-    const service_account = getInput("service_account") || 'helm-ttl-plugin';
-
+    const service_account = getInput("service_account") || "helm-ttl-plugin";
 
     core.debug(`param: cluster_project = "${cluster_project}"`);
     core.debug(`param: cluster_location = "${cluster_location}"`);
@@ -218,14 +232,21 @@ async function run() {
 
     // Assert that if ttl is set that release contains '-pr-'
     if (helm === "helm3" && ttl !== "false") {
-      if (!release.includes('-pr-')) {
-        core.error("ttl is set but release name does not contain '-pr-'. Aborting!");
+      if (!release.includes("-pr-")) {
+        core.error(
+          "ttl is set but release name does not contain '-pr-'. Aborting!"
+        );
         process.exit(1);
       }
     }
 
     // Setup GKE cluster authentication
-    await setupClusterAuthentication(cluster_project, cluster_location, cluster_name, cluster_sajson);
+    await setupClusterAuthentication(
+      cluster_project,
+      cluster_location,
+      cluster_name,
+      cluster_sajson
+    );
 
     // Setup command options and arguments.
     const args = [
@@ -238,15 +259,15 @@ async function run() {
 
     // Per https://helm.sh/docs/faq/#xdg-base-directory-support
     if (helm === "helm3") {
-      process.env.XDG_DATA_HOME = "/root/.helm/"
-      process.env.XDG_CACHE_HOME = "/root/.helm/"
-      process.env.XDG_CONFIG_HOME = "/root/.helm/"
-      process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins"
-      process.env.HELM_DATA_HOME = "/root/.local/share/helm"
-      process.env.HELM_CACHE_HOME = "/root/.cache/helm"
-      process.env.HELM_CONFIG_HOME = "/root/.config/helm"
+      process.env.XDG_DATA_HOME = "/root/.helm/";
+      process.env.XDG_CACHE_HOME = "/root/.helm/";
+      process.env.XDG_CONFIG_HOME = "/root/.helm/";
+      process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins";
+      process.env.HELM_DATA_HOME = "/root/.local/share/helm";
+      process.env.HELM_CACHE_HOME = "/root/.cache/helm";
+      process.env.HELM_CONFIG_HOME = "/root/.config/helm";
     } else {
-      process.env.HELM_HOME = "/root/.helm/"
+      process.env.HELM_HOME = "/root/.helm/";
     }
 
     if (dryRun) args.push("--dry-run");
@@ -255,7 +276,7 @@ async function run() {
     if (chartVersion) args.push(`--version=${chartVersion}`);
     if (timeout) args.push(`--timeout=${timeout}`);
     if (repository) args.push(`--repo=${repository}`);
-    valueFiles.forEach(f => args.push(`--values=${f}`));
+    valueFiles.forEach((f) => args.push(`--values=${f}`));
     args.push("--values=./values.yml");
 
     // Special behaviour is triggered if the track is labelled 'canary'. The
@@ -289,22 +310,23 @@ async function run() {
     if (removeCanary) {
       core.debug(`removing canary ${appName}-canary`);
       await exec.exec(helm, deleteCmd(helm, namespace, `${appName}-canary`), {
-        ignoreReturnCode: true
+        ignoreReturnCode: true,
       });
     }
 
     // Actually execute the deployment here.
     if (task === "remove") {
-      if (helm === "helm3") { // delete ttl cronjob in case it was set (it is not required).
+      if (helm === "helm3") {
+        // delete ttl cronjob in case it was set (it is not required).
         await exec.exec(
           helm,
           [`--namespace=${namespace}`, "release", "ttl", release, `--unset`],
-          {env: process.env, ignoreReturnCode: true}
+          { env: process.env, ignoreReturnCode: true }
         );
       }
 
       await exec.exec(helm, deleteCmd(helm, namespace, release), {
-        ignoreReturnCode: true
+        ignoreReturnCode: true,
       });
     } else {
       await exec.exec(helm, args);
@@ -312,10 +334,17 @@ async function run() {
 
     // Set ttl if set
     if (helm === "helm3" && ttl !== "false") {
-      core.info('Setting ttl: ' + ttl);
+      core.info("Setting ttl: " + ttl);
       await exec.exec(
         helm,
-        [`--namespace=${namespace}`, "release", "ttl", release, `--service-account=${service_account}`, `--set=${ttl}`],
+        [
+          `--namespace=${namespace}`,
+          "release",
+          "ttl",
+          release,
+          `--service-account=${service_account}`,
+          `--set=${ttl}`,
+        ],
         { env: process.env }
       );
     }

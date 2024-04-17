@@ -172,7 +172,7 @@ async function setupClusterAuthentication(project, location, name, sa_json) {
   await deleteFile("sa.json");
 }
 
-function unsetGloudariables() {
+function unsetGcloudVariables() {
   delete process.env.CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE;
   delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
   delete process.env.GOOGLE_GHA_CREDS_PATH;
@@ -193,7 +193,7 @@ async function run() {
     const context = github.context;
     await status("pending");
 
-    unsetGloudariables();
+    unsetGcloudVariables();
 
     const cluster_project = getInput("clusterproject", required);
     const cluster_location = getInput("clusterlocation", required);

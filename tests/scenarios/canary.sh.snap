@@ -2,7 +2,7 @@
 ::debug::param: cluster_project = "GKEproject"
 ::debug::param: cluster_location = "GKElocation"
 ::debug::param: cluster_name = "clusterName"
-::debug::param: cluster_sajson = "{"json":"here"}"
+::debug::param: cluster_sajson = "{"json":"here", "client_email":"example@example.com"}"
 ::debug::param: track = "canary"
 ::debug::param: release = "app-canary"
 ::debug::param: appName = "app"
@@ -24,8 +24,8 @@
 Setting up GKE authentication
 [command]/opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json
-[command]/opt/google-cloud-sdk/bin/gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
-gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject
+[command]/opt/google-cloud-sdk/bin/gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
+gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
 [command]/tmp/bin/helm upgrade app-canary /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --set=service.enabled=false --set=ingress.enabled=false --atomic

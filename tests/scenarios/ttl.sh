@@ -3,7 +3,7 @@
 INPUT_CLUSTERPROJECT="GKEproject" \
 INPUT_CLUSTERLOCATION="GKElocation" \
 INPUT_CLUSTERNAME="clusterName" \
-INPUT_CLUSTERSAJSON='{"json":"here"}' \
+INPUT_CLUSTERSAJSON='{"json":"here", "client_email":"example@example.com"}' \
 INPUT_HELM=helm3 \
 INPUT_TOKEN=foo \
 INPUT_SECRETS='{"secret": "val"}' \

@@ -27,9 +27,9 @@ jobs:
       - name: Build
         run: |-
           docker build \
-            --tag "europe-docker.pkg.dev/uniorn-985/public-images/helm-action:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}" .
+            --tag "europe-docker.pkg.dev/unicorn-985/public-images/helm-action:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}" .
 
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |-
-          docker push "europe-docker.pkg.dev/uniorn-985/public-images/helm-action:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}"
+          docker push "europe-docker.pkg.dev/unicorn-985/public-images/helm-action:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}"

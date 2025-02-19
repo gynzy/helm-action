@@ -9,12 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: 'unicorn-985'
+          credentials_json: ${{ secrets.GCE_NEW_TEST_JSON }}
 
       # Setup gcloud CLI
-      - uses: google-github-actions/setup-gcloud@v0
+      - uses: google-github-actions/setup-gcloud@v2
         with:
-          service_account_key: ${{ secrets.GCE_NEW_TEST_JSON }}
           project_id: unicorn-985
 
       # Configure Docker to use the gcloud command-line tool as a credential

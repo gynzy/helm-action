@@ -1,8 +1,7 @@
 # Gynzy `additions
 Fork from https://github.com/deliverybot/helm
 
-Uses "our" helm version of helm 2.15.2
-
+Helm2 was removed from this plugin in our fork.
 Releasing: The `v1` tag gets updated on **master merge**!
 
 
@@ -24,7 +23,7 @@ payload if the action was triggered by a deployment.
 
 #### Cluster authentication
 - `clusterProject`: The project in which the GKE cluster resides (required)
-- `clusterLocation`: The location(zone) in which the GKE cluster resides (required) 
+- `clusterLocation`: The location(zone) in which the GKE cluster resides (required)
 - `clusterName`:  The cluster name (required)
 - `clusterSaJson`: The service account json secret to be used (required)
 
@@ -46,7 +45,6 @@ payload if the action was triggered by a deployment.
   JSON encoded array or a string.
 - `secrets`: Secret variables to include in value file interpolation. Expects a
   JSON encoded map.
-- `helm`: Helm binary to execute, one of: [`helm`, `helm3`].
 - `version`: Version of the app, usually commit sha works here.
 - `timeout`: specify a timeout for helm deployment
 - `repository`: specify the URL for a helm repo to come from
@@ -85,7 +83,7 @@ jobs:
   deployment:
     runs-on: 'ubuntu-latest'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: 'Deploy'
       uses: 'deliverybot/helm@v1'
@@ -98,7 +96,7 @@ jobs:
           name: foobar
         value-files: >-
         [
-          "values.yaml", 
+          "values.yaml",
           "values.production.yaml"
         ]
       env:
@@ -126,7 +124,7 @@ jobs:
   deployment:
     runs-on: 'ubuntu-latest'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: 'Deploy'
       uses: 'deliverybot/helm@v1'

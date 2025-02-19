@@ -11,6 +11,7 @@ const deleteFile = util.promisify(fs.rm);
 const required = { required: true };
 
 const GCLOUD_BINARY = "/opt/google-cloud-sdk/bin/gcloud";
+const HELM3_BINARY = "helm3";
 
 /**
  * Status marks the deployment status. Only activates if token is set as an
@@ -137,15 +138,11 @@ function renderFiles(files, data) {
 /**
  * Makes a delete command for compatibility between helm 2 and 3.
  *
- * @param {string} helm
  * @param {string} namespace
  * @param {string} release
  */
-function deleteCmd(helm, namespace, release) {
-  if (helm === "helm3") {
+function deleteCmd(namespace, release) {
     return ["delete", "-n", namespace, release];
-  }
-  return ["delete", "--purge", release];
 }
 
 async function setupClusterAuthentication(project, location, name, sa_json) {
@@ -211,7 +208,6 @@ async function run() {
     const version = getInput("version");
     const valueFiles = getValueFiles(getInput("value_files"));
     const removeCanary = getInput("remove_canary");
-    const helm = getInput("helm") || "helm";
     const timeout = getInput("timeout");
     const repository = getInput("repository");
     const dryRun = core.getInput("dry-run");
@@ -246,7 +242,7 @@ async function run() {
     core.debug(`param: service_account = "${service_account}"`);
 
     // Assert that if ttl is set that release contains '-pr-'
-    if (helm === "helm3" && ttl !== "false") {
+    if (ttl !== "false") {
       if (!release.includes("-pr-")) {
         core.error(
           "ttl is set but release name does not contain '-pr-'. Aborting!"
@@ -273,17 +269,14 @@ async function run() {
     ];
 
     // Per https://helm.sh/docs/faq/#xdg-base-directory-support
-    if (helm === "helm3") {
-      process.env.XDG_DATA_HOME = "/root/.helm/";
-      process.env.XDG_CACHE_HOME = "/root/.helm/";
-      process.env.XDG_CONFIG_HOME = "/root/.helm/";
-      process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins";
-      process.env.HELM_DATA_HOME = "/root/.local/share/helm";
-      process.env.HELM_CACHE_HOME = "/root/.cache/helm";
-      process.env.HELM_CONFIG_HOME = "/root/.config/helm";
-    } else {
-      process.env.HELM_HOME = "/root/.helm/";
-    }
+    process.env.XDG_DATA_HOME = "/root/.helm/";
+    process.env.XDG_CACHE_HOME = "/root/.helm/";
+    process.env.XDG_CONFIG_HOME = "/root/.helm/";
+    process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins";
+    process.env.HELM_DATA_HOME = "/root/.local/share/helm";
+    process.env.HELM_CACHE_HOME = "/root/.cache/helm";
+    process.env.HELM_CONFIG_HOME = "/root/.config/helm";
+
 
     if (dryRun) args.push("--dry-run");
     if (appName) args.push(`--set=app.name=${appName}`);
@@ -324,34 +317,31 @@ async function run() {
     // Remove the canary deployment before continuing.
     if (removeCanary) {
       core.debug(`removing canary ${appName}-canary`);
-      await exec.exec(helm, deleteCmd(helm, namespace, `${appName}-canary`), {
+      await exec.exec(HELM3_BINARY, deleteCmd(namespace, `${appName}-canary`), {
         ignoreReturnCode: true,
       });
     }
 
     // Actually execute the deployment here.
     if (task === "remove") {
-      if (helm === "helm3") {
-        // delete ttl cronjob in case it was set (it is not required).
-        await exec.exec(
-          helm,
-          [`--namespace=${namespace}`, "release", "ttl", release, `--unset`],
-          { env: process.env, ignoreReturnCode: true }
-        );
-      }
-
-      await exec.exec(helm, deleteCmd(helm, namespace, release), {
-        ignoreReturnCode: true,
-      });
-    } else {
-      await exec.exec(helm, args);
+      // delete ttl cronjob in case it was set (it is not required).
+      await exec.exec(
+        HELM3_BINARY,
+        [`--namespace=${namespace}`, "release", "ttl", release, `--unset`],
+        { env: process.env, ignoreReturnCode: true }
+      );
     }
 
+    await exec.exec(HELM3_BINARY, deleteCmd(namespace, release), {
+      ignoreReturnCode: true,
+    });
+
+
     // Set ttl if set
-    if (helm === "helm3" && ttl !== "false") {
+    if (ttl !== "false") {
       core.info("Setting ttl: " + ttl);
       await exec.exec(
-        helm,
+        HELM3_BINARY,
         [
           `--namespace=${namespace}`,
           "release",

@@ -325,7 +325,8 @@ async function run() {
 
     // Run build depdencies if set.
     if (fetchDependencies === "true") {
-      core.info("Fetching chart dependencies");
+      core.info("Fetching chart dependencies. Running update & build");
+      await exec.exec(helm, ["dependency", "update", chart]);
       await exec.exec(helm, ["dependency", "build", chart]);
     }
 

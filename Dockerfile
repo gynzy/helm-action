@@ -1,9 +1,9 @@
-FROM alpine:3.18.0
+FROM alpine:3.22.0
 
 ENV BASE_URL="https://get.helm.sh"
 
 ENV HELM_2_FILE="helm-v2.15.2-linux-amd64.tar.gz"
-ENV HELM_3_FILE="helm-v3.11.1-linux-amd64.tar.gz"
+ENV HELM_3_FILE="helm-v3.13.3-linux-amd64.tar.gz"
 
 # coreutils is needed helm3 ttl plugin
 # git is needed to install a helm3 plugin

@@ -218,6 +218,7 @@ async function run() {
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
     const ttl = getInput("ttl") || "false";
+    const fetchDependencies = getInput("fetch_dependencies") || "false";
     // only needed when ttl is specified
     // this service account is used when ttl has expired inside the cronjob context.
     const service_account = getInput("service_account") || "helm-ttl-plugin";
@@ -244,6 +245,7 @@ async function run() {
     core.debug(`param: atomic = "${atomic}"`);
     core.debug(`param: ttl = "${ttl}"`);
     core.debug(`param: service_account = "${service_account}"`);
+    core.debug(`param: fetchDepencencies = "${fetchDependencies}"`);
 
     // Assert that if ttl is set that release contains '-pr-'
     if (helm === "helm3" && ttl !== "false") {
@@ -320,6 +322,12 @@ async function run() {
       secrets,
       deployment: context.payload.deployment,
     });
+
+    // Run build depdencies if set.
+    if (fetchDependencies === "true") {
+      core.info("Fetching chart dependencies");
+      await exec.exec(helm, ["dependency", "build", chart]);
+    }
 
     // Remove the canary deployment before continuing.
     if (removeCanary) {

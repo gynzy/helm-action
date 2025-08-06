@@ -21,6 +21,7 @@
 ::debug::param: atomic = "true"
 ::debug::param: ttl = "false"
 ::debug::param: service_account = "helm-ttl-plugin"
+::debug::param: fetchDepencencies = "false"
 Setting up GKE authentication
 [command]/opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=sa.json
 gcloud auth activate-service-account --key-file=sa.json

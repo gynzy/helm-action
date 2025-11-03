@@ -28,7 +28,7 @@ inputs:
     description: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
     required: false
   helm:
-    description: Helm binary to execute, one of [helm, helm3].
+    description: Helm binary to execute (defaults to Helm 3).
     required: false
   token:
     description: Github repository token. If included and the event is a deployment

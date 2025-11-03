@@ -15,7 +15,6 @@
 ::debug::param: version = "1234"
 ::debug::param: secrets = "{"secret":"val"}"
 ::debug::param: valueFiles = "[]"
-::debug::param: removeCanary = 
 ::debug::param: timeout = "30"
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"

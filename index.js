@@ -209,6 +209,7 @@ async function run() {
     const valueFiles = getValueFiles(getInput("value_files"));
     let helm =  getInput("helm") || "helm3";
     const timeout = getInput("timeout");
+    const wait = getInput("wait") || "false";
     const repository = getInput("repository");
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
@@ -236,6 +237,7 @@ async function run() {
     core.debug(`param: secrets = "${JSON.stringify(secrets)}"`);
     core.debug(`param: valueFiles = "${JSON.stringify(valueFiles)}"`);
     core.debug(`param: timeout = "${timeout}"`);
+    core.debug(`param: wait = "${wait}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
     core.debug(`param: ttl = "${ttl}"`);
@@ -288,6 +290,7 @@ async function run() {
     if (version) args.push(`--set=app.version=${version}`);
     if (chartVersion) args.push(`--version=${chartVersion}`);
     if (timeout) args.push(`--timeout=${timeout}`);
+    if (wait) args.push(`--wait`);
     if (repository) args.push(`--repo=${repository}`);
     valueFiles.forEach((f) => args.push(`--values=${f}`));
     args.push("--values=./values.yml");

@@ -30,6 +30,12 @@ inputs:
   helm:
     description: Helm binary to execute (defaults to Helm 3).
     required: false
+  timeout:
+    description: Time to wait for any individual Kubernetes operation like pods. To be used in conjunction with wait (defaults to false. i.e. 5m)
+    required: false
+  wait:
+    description: If true, will wait until all Pods, PVCs, Services, and minimum number of Pods of a Deployment are in a ready state before marking the release as successful.
+    required: false
   token:
     description: Github repository token. If included and the event is a deployment
       the deployment_status event will be fired.

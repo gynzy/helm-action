@@ -16,6 +16,7 @@
 ::debug::param: secrets = "{"secret":"val"}"
 ::debug::param: valueFiles = "[]"
 ::debug::param: timeout = ""
+::debug::param: wait = "false"
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
 ::debug::param: ttl = "7 days"
@@ -28,8 +29,8 @@ gcloud auth activate-service-account --key-file=sa.json
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]/tmp/bin/helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
-helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
+[command]/tmp/bin/helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --wait --values=./values.yml --atomic
+helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --wait --values=./values.yml --atomic
 Setting ttl: 7 days
 [command]/tmp/bin/helm --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days
 helm --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days

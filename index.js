@@ -290,7 +290,7 @@ async function run() {
     if (version) args.push(`--set=app.version=${version}`);
     if (chartVersion) args.push(`--version=${chartVersion}`);
     if (timeout) args.push(`--timeout=${timeout}`);
-    if (wait) args.push(`--wait`);
+    if (wait === "true") args.push(`--wait`);
     if (repository) args.push(`--repo=${repository}`);
     valueFiles.forEach((f) => args.push(`--values=${f}`));
     args.push("--values=./values.yml");

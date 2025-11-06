@@ -4,7 +4,6 @@ INPUT_CLUSTERPROJECT="GKEproject" \
 INPUT_CLUSTERLOCATION="GKElocation" \
 INPUT_CLUSTERNAME="clusterName" \
 INPUT_CLUSTERSAJSON='{"json":"here", "client_email":"example@example.com"}' \
-INPUT_HELM=helm3 \
 INPUT_TOKEN=foo \
 INPUT_SECRETS='{"secret": "val"}' \
 INPUT_CHART=app \
@@ -13,4 +12,6 @@ INPUT_RELEASE=app \
 INPUT_VERSION=1234 \
 INPUT_TRACK=stable \
 INPUT_VALUES='{"replicaCount": 1, "image": {"repository": "nginx", "tag": "latest"}}' \
+INPUT_TIMEOUT='5m' \
+INPUT_WAIT='true' \
 node ../index.js

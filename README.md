@@ -1,16 +1,14 @@
-# Gynzy `additions
+# Gynzy additions
 Fork from https://github.com/deliverybot/helm
 
-Uses "our" helm version of helm 2.15.2
-
-Releasing: The `v1` tag gets updated on **master merge**!
+- stripped features we don't use.
+- releasing: The `v4` tag gets updated on **master merge**!
 
 
 # Helm Action
 
-Deploys a helm chart using GitHub actions. Supports canary deployments and
-provides a built in helm chart for apps that listen over http to get your ramped
-up quickly.
+Deploys a helm chart using GitHub actions. Provides a built in helm chart for
+apps that listen over http to get you ramped up quickly.
 
 View an example repository using this action at
 [github.com/deliverybot/example-helm](https://github.com/deliverybot/example-helm).
@@ -24,7 +22,7 @@ payload if the action was triggered by a deployment.
 
 #### Cluster authentication
 - `clusterProject`: The project in which the GKE cluster resides (required)
-- `clusterLocation`: The location(zone) in which the GKE cluster resides (required) 
+- `clusterLocation`: The location(zone) in which the GKE cluster resides (required)
 - `clusterName`:  The cluster name (required)
 - `clusterSaJson`: The service account json secret to be used (required)
 
@@ -35,8 +33,7 @@ payload if the action was triggered by a deployment.
   chart found in this repository. (required)
 - `chart_version`: The version of the helm chart you want to deploy (distinct from app version)
 - `values`: Helm chart values, expected to be a YAML or JSON string.
-- `track`: Track for the deployment. If the track is not "stable" it activates
-  the canary workflow described below.
+- `track`: Track for the deployment (e.g., stable, staging).
 - `task`: Task name. If the task is "remove" it will remove the configured helm
   release.
 - `dry-run`: Helm dry-run option.
@@ -46,12 +43,13 @@ payload if the action was triggered by a deployment.
   JSON encoded array or a string.
 - `secrets`: Secret variables to include in value file interpolation. Expects a
   JSON encoded map.
-- `helm`: Helm binary to execute, one of: [`helm`, `helm3`].
+- `helm`: Helm binary to execute (defaults to `helm`, which uses Helm 3. Currently only supported version).
 - `version`: Version of the app, usually commit sha works here.
-- `timeout`: specify a timeout for helm deployment
+- `wait`: If true, will wait until all Pods, PVCs, Services, and minimum number of Pods of a Deployment are in a ready state before marking the release as successful. (defaults to false)
+- `timeout`: specify a timeout for helm deployment. to be used in conjunction with wait (default if omitted is 5m)
 - `repository`: specify the URL for a helm repo to come from
 - `atomic`: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
-- `ttl`: Optional ttl which can be set until the deployment will be deleted. For example `7 days`. Only works with helm3 and `release` *must* contain the string `-pr-`
+- `ttl`: Optional ttl which can be set until the deployment will be deleted. For example `7 days`. The `release` *must* contain the string `-pr-`
 
 Additional parameters: If the action is being triggered by a deployment event
 and the `task` parameter in the deployment event is set to `"remove"` then this
@@ -59,8 +57,7 @@ action will execute a `helm delete $service`
 
 #### Versions
 
-- `helm`: v2.16.1
-- `helm3`: v3.0.0
+- `helm`: v3.19.0 (Helm 3)
 
 ### Environment
 
@@ -98,46 +95,9 @@ jobs:
           name: foobar
         value-files: >-
         [
-          "values.yaml", 
+          "values.yaml",
           "values.production.yaml"
         ]
-      env:
-        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
-```
-
-## Example canary
-
-If a track is chosen that is equal to canary, this updates the helm chart
-in a few ways:
-
-1. Release name is changed to `{release}-{track}` (eg. myapp-canary).
-2. The service is disabled on the helm chart `service.enabled=false`
-3. The ingress is disabled on the helm chart `ingress.enabled=false`
-
-Not enabling the service or ingress allows the stable ingress and service
-resources to pick up the canary pods and route traffic to them.
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy
-on: ['deployment']
-
-jobs:
-  deployment:
-    runs-on: 'ubuntu-latest'
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: 'Deploy'
-      uses: 'deliverybot/helm@v1'
-      with:
-        release: 'nginx'
-        track: canary
-        namespace: 'default'
-        chart: 'app'
-        token: '${{ github.token }}'
-        values: |
-          name: foobar
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
 ```

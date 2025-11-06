@@ -28,7 +28,13 @@ inputs:
     description: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
     required: false
   helm:
-    description: Helm binary to execute, one of [helm, helm3].
+    description: Helm binary to execute (defaults to Helm 3).
+    required: false
+  timeout:
+    description: specify a timeout for helm deployment. to be used in conjunction with wait (default if omitted is 5m)
+    required: false
+  wait:
+    description: If true, will wait until all Pods, PVCs, Services, and minimum number of Pods of a Deployment are in a ready state before marking the release as successful.
     required: false
   token:
     description: Github repository token. If included and the event is a deployment

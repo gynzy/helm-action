@@ -3,8 +3,8 @@
 ::debug::param: cluster_location = "GKElocation"
 ::debug::param: cluster_name = "clusterName"
 ::debug::param: cluster_sajson = "{"json":"here", "client_email":"example@example.com"}"
-::debug::param: track = "canary"
-::debug::param: release = "app-canary"
+::debug::param: track = "stable"
+::debug::param: release = "app"
 ::debug::param: appName = "app"
 ::debug::param: namespace = "default"
 ::debug::param: chart = "/usr/src/charts/app"
@@ -15,8 +15,8 @@
 ::debug::param: version = "1234"
 ::debug::param: secrets = "{"secret":"val"}"
 ::debug::param: valueFiles = "[]"
-::debug::param: removeCanary = 
-::debug::param: timeout = ""
+::debug::param: timeout = "5m"
+::debug::param: wait = "false"
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
 ::debug::param: ttl = "false"
@@ -29,6 +29,6 @@ gcloud auth activate-service-account --key-file=sa.json
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]/tmp/bin/helm upgrade app-canary /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --set=service.enabled=false --set=ingress.enabled=false --atomic
-helm upgrade app-canary /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --values=./values.yml --set=service.enabled=false --set=ingress.enabled=false --atomic
+[command]/tmp/bin/helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --wait --values=./values.yml --atomic
+helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --wait --values=./values.yml --atomic
 ::debug::not setting deployment status

@@ -8,9 +8,9 @@ INPUT_TOKEN=foo \
 INPUT_SECRETS='{"secret": "val"}' \
 INPUT_CHART=app \
 INPUT_NAMESPACE=default \
-INPUT_RELEASE='app-pr-123' \
+INPUT_RELEASE=app \
 INPUT_VERSION=1234 \
 INPUT_TRACK=stable \
 INPUT_VALUES='{"replicaCount": 1, "image": {"repository": "nginx", "tag": "latest"}}' \
-INPUT_TTL='7 days' \
+INPUT_TIMEOUT='5m' \
 node ../index.js

@@ -4,6 +4,7 @@ const exec = require("@actions/exec");
 const fs = require("fs");
 const util = require("util");
 const Mustache = require("mustache");
+const { get } = require("http");
 
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
@@ -135,17 +136,13 @@ function renderFiles(files, data) {
 }
 
 /**
- * Makes a delete command for compatibility between helm 2 and 3.
+ * Makes a delete command for helm.
  *
- * @param {string} helm
  * @param {string} namespace
  * @param {string} release
  */
-function deleteCmd(helm, namespace, release) {
-  if (helm === "helm3") {
-    return ["delete", "-n", namespace, release];
-  }
-  return ["delete", "--purge", release];
+function deleteCmd(namespace, release) {
+  return ["delete", "-n", namespace, release];
 }
 
 async function setupClusterAuthentication(project, location, name, sa_json) {
@@ -210,9 +207,9 @@ async function run() {
     const task = getInput("task");
     const version = getInput("version");
     const valueFiles = getValueFiles(getInput("value_files"));
-    const removeCanary = getInput("remove_canary");
-    const helm = getInput("helm") || "helm";
+    let helm =  getInput("helm") || "helm3";
     const timeout = getInput("timeout");
+    const wait = getInput("wait") || "false";
     const repository = getInput("repository");
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
@@ -239,16 +236,21 @@ async function run() {
     core.debug(`param: version = "${version}"`);
     core.debug(`param: secrets = "${JSON.stringify(secrets)}"`);
     core.debug(`param: valueFiles = "${JSON.stringify(valueFiles)}"`);
-    core.debug(`param: removeCanary = ${removeCanary}`);
     core.debug(`param: timeout = "${timeout}"`);
+    core.debug(`param: wait = "${wait}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
     core.debug(`param: ttl = "${ttl}"`);
     core.debug(`param: service_account = "${service_account}"`);
     core.debug(`param: fetchDepencencies = "${fetchDependencies}"`);
 
+    // set binary to "helm" if helm3 is specified
+    if (helm === "helm3") {
+      helm = "helm";
+    }
+
     // Assert that if ttl is set that release contains '-pr-'
-    if (helm === "helm3" && ttl !== "false") {
+    if (ttl !== "false") {
       if (!release.includes("-pr-")) {
         core.error(
           "ttl is set but release name does not contain '-pr-'. Aborting!"
@@ -275,33 +277,23 @@ async function run() {
     ];
 
     // Per https://helm.sh/docs/faq/#xdg-base-directory-support
-    if (helm === "helm3") {
-      process.env.XDG_DATA_HOME = "/root/.helm/";
-      process.env.XDG_CACHE_HOME = "/root/.helm/";
-      process.env.XDG_CONFIG_HOME = "/root/.helm/";
-      process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins";
-      process.env.HELM_DATA_HOME = "/root/.local/share/helm";
-      process.env.HELM_CACHE_HOME = "/root/.cache/helm";
-      process.env.HELM_CONFIG_HOME = "/root/.config/helm";
-    } else {
-      process.env.HELM_HOME = "/root/.helm/";
-    }
+    process.env.XDG_DATA_HOME = "/root/.helm/";
+    process.env.XDG_CACHE_HOME = "/root/.helm/";
+    process.env.XDG_CONFIG_HOME = "/root/.helm/";
+    process.env.HELM_PLUGINS = "/root/.local/share/helm/plugins";
+    process.env.HELM_DATA_HOME = "/root/.local/share/helm";
+    process.env.HELM_CACHE_HOME = "/root/.cache/helm";
+    process.env.HELM_CONFIG_HOME = "/root/.config/helm";
 
     if (dryRun) args.push("--dry-run");
     if (appName) args.push(`--set=app.name=${appName}`);
     if (version) args.push(`--set=app.version=${version}`);
     if (chartVersion) args.push(`--version=${chartVersion}`);
     if (timeout) args.push(`--timeout=${timeout}`);
+    if (wait) args.push(`--wait`);
     if (repository) args.push(`--repo=${repository}`);
     valueFiles.forEach((f) => args.push(`--values=${f}`));
     args.push("--values=./values.yml");
-
-    // Special behaviour is triggered if the track is labelled 'canary'. The
-    // service and ingress resources are disabled. Access to the canary
-    // deployments can be routed via the main stable service resource.
-    if (track === "canary") {
-      args.push("--set=service.enabled=false", "--set=ingress.enabled=false");
-    }
 
     // If true upgrade process rolls back changes made in case of failed upgrade.
     if (atomic === true) {
@@ -330,26 +322,16 @@ async function run() {
       await exec.exec(helm, ["dependency", "build", chart]);
     }
 
-    // Remove the canary deployment before continuing.
-    if (removeCanary) {
-      core.debug(`removing canary ${appName}-canary`);
-      await exec.exec(helm, deleteCmd(helm, namespace, `${appName}-canary`), {
-        ignoreReturnCode: true,
-      });
-    }
-
     // Actually execute the deployment here.
     if (task === "remove") {
-      if (helm === "helm3") {
-        // delete ttl cronjob in case it was set (it is not required).
-        await exec.exec(
-          helm,
-          [`--namespace=${namespace}`, "release", "ttl", release, `--unset`],
-          { env: process.env, ignoreReturnCode: true }
-        );
-      }
+      // delete ttl cronjob in case it was set (it is not required).
+      await exec.exec(
+        helm,
+        [`--namespace=${namespace}`, "release", "ttl", release, `--unset`],
+        { env: process.env, ignoreReturnCode: true }
+      );
 
-      await exec.exec(helm, deleteCmd(helm, namespace, release), {
+      await exec.exec(helm, deleteCmd(namespace, release), {
         ignoreReturnCode: true,
       });
     } else {
@@ -357,7 +339,7 @@ async function run() {
     }
 
     // Set ttl if set
-    if (helm === "helm3" && ttl !== "false") {
+    if (ttl !== "false") {
       core.info("Setting ttl: " + ttl);
       await exec.exec(
         helm,

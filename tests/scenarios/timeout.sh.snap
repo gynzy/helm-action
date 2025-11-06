@@ -29,6 +29,6 @@ gcloud auth activate-service-account --key-file=sa.json
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]/tmp/bin/helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --wait --values=./values.yml --atomic
-helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --wait --values=./values.yml --atomic
+[command]/tmp/bin/helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --values=./values.yml --atomic
+helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --timeout=5m --values=./values.yml --atomic
 ::debug::not setting deployment status

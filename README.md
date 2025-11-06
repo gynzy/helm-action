@@ -45,8 +45,8 @@ payload if the action was triggered by a deployment.
   JSON encoded map.
 - `helm`: Helm binary to execute (defaults to `helm`, which uses Helm 3. Currently only supported version).
 - `version`: Version of the app, usually commit sha works here.
-- `wait`: Time to wait for any individual Kubernetes operation like deployment pods. To be used in conjunction with wait (defaults to false. i.e. 5m)
-- `timeout`: specify a timeout for helm deployment
+- `wait`: If true, will wait until all Pods, PVCs, Services, and minimum number of Pods of a Deployment are in a ready state before marking the release as successful. (defaults to false)
+- `timeout`: specify a timeout for helm deployment. to be used in conjunction with wait (default if omitted is 5m)
 - `repository`: specify the URL for a helm repo to come from
 - `atomic`: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
 - `ttl`: Optional ttl which can be set until the deployment will be deleted. For example `7 days`. The `release` *must* contain the string `-pr-`

@@ -49,6 +49,7 @@ payload if the action was triggered by a deployment.
 - `timeout`: specify a timeout for helm deployment. to be used in conjunction with wait (default if omitted is 5m)
 - `repository`: specify the URL for a helm repo to come from
 - `atomic`: If true, upgrade process rolls back changes made in case of failed upgrade. Defaults to true.
+- `create-namespace`: If true, create the release namespace if it does not exist. Defaults to `false`, so existing behaviour is unchanged.
 - `ttl`: Optional ttl which can be set until the deployment will be deleted. For example `7 days`. The `release` *must* contain the string `-pr-`
 
 Additional parameters: If the action is being triggered by a deployment event

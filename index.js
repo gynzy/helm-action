@@ -214,6 +214,7 @@ async function run() {
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
+    const createNamespace = getInput("create_namespace") || "false";
     const ttl = getInput("ttl") || "false";
     const fetchDependencies = getInput("fetch_dependencies") || "false";
     // only needed when ttl is specified
@@ -240,6 +241,7 @@ async function run() {
     core.debug(`param: wait = "${wait}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
+    core.debug(`param: create_namespace = "${createNamespace}"`);
     core.debug(`param: ttl = "${ttl}"`);
     core.debug(`param: service_account = "${service_account}"`);
     core.debug(`param: fetchDepencencies = "${fetchDependencies}"`);
@@ -291,6 +293,7 @@ async function run() {
     if (chartVersion) args.push(`--version=${chartVersion}`);
     if (timeout) args.push(`--timeout=${timeout}`);
     if (wait === "true") args.push(`--wait`);
+    if (createNamespace === "true") args.push(`--create-namespace`);
     if (repository) args.push(`--repo=${repository}`);
     valueFiles.forEach((f) => args.push(`--values=${f}`));
     args.push("--values=./values.yml");

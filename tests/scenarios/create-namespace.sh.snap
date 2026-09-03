@@ -4,8 +4,8 @@
 ::debug::param: cluster_name = "clusterName"
 ::debug::param: cluster_sajson = "{"json":"here", "client_email":"example@example.com"}"
 ::debug::param: track = "stable"
-::debug::param: release = "app-pr-123"
-::debug::param: appName = "app-pr-123"
+::debug::param: release = "app"
+::debug::param: appName = "app"
 ::debug::param: namespace = "default"
 ::debug::param: chart = "/usr/src/charts/app"
 ::debug::param: chart_version = ""
@@ -19,8 +19,8 @@
 ::debug::param: wait = "false"
 ::debug::param: repository = ""
 ::debug::param: atomic = "true"
-::debug::param: create_namespace = "false"
-::debug::param: ttl = "7 days"
+::debug::param: create_namespace = "true"
+::debug::param: ttl = "false"
 ::debug::param: service_account = "helm-ttl-plugin"
 ::debug::param: fetchDepencencies = "false"
 Setting up GKE authentication
@@ -30,9 +30,6 @@ gcloud auth activate-service-account --key-file=sa.json
 gcloud container clusters get-credentials clusterName --zone GKElocation --project GKEproject --account example@example.com
 ::debug::env: KUBECONFIG="undefined"
 ::debug::rendering value files [./values.yml] with: {"secrets":{"secret":"val"}}
-[command]/tmp/bin/helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
-helm upgrade app-pr-123 /usr/src/charts/app --install --namespace=default --set=app.name=app-pr-123 --set=app.version=1234 --values=./values.yml --atomic
-Setting ttl: 7 days
-[command]/tmp/bin/helm --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days
-helm --namespace=default release ttl app-pr-123 --service-account=helm-ttl-plugin --set=7 days
+[command]/tmp/bin/helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --create-namespace --values=./values.yml --atomic
+helm upgrade app /usr/src/charts/app --install --namespace=default --set=app.name=app --set=app.version=1234 --create-namespace --values=./values.yml --atomic
 ::debug::not setting deployment status
